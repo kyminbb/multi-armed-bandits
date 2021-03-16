@@ -1,7 +1,7 @@
 from typing import List
 import numpy as np
 import matplotlib.pyplot as plt
-from agents import epsilon_greedy, optimistic_initialization, ucb
+from agents import epsilon_greedy, optimistic_initialization, ucb, boltzmann
 
 
 class Testbed:
@@ -44,7 +44,8 @@ class Testbed:
         elif algorithm == 'ucb':
             self.agents[algorithm] = ucb.UCB(self.bandits, self.arms, self.time_steps, hyperparameters, self.q_true)
         elif algorithm == 'boltzmann':
-            pass
+            self.agents[algorithm] = boltzmann.Boltzmann(
+                self.bandits, self.arms, self.time_steps, hyperparameters, self.q_true)
 
     def test_all(self):
         '''Experiment with all the agents registered in the testbed.
