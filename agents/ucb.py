@@ -3,46 +3,47 @@ import numpy as np
 from . import Agent
 
 
-class OptimisticInitialization(Agent):
-    def __init__(self, bandits: int, arms: int, time_steps: int, initial_values: List[float], q_true: np.numarray):
-        '''Initialize a multi-armed bandit agent using optimistic initialization.
+class UCB(Agent):
+    def __init__(self, bandits: int, arms: int, time_steps: int, c_values: List[float], q_true: np.numarray):
+        '''Initialize a multi-armed bandit agent using UCB exploration.
 
         Args:
             bandits (int): The number of bandits (independent experiments). Since each experiment is noisy, take the 
                 average to evaluate performance.
             arms (int): The number of arms of each bandit.
             time_steps (int): The number of steps we run each bandit.
-            initial_values (list of (float)): Different initial action-values to test the algorithm.
+            c_values (list of (float)): Different c values to test the algorithm.
             q_true (numpy array): The true average rewards for each arm. 
         '''
-        super().__init__(bandits, arms, time_steps, initial_values, q_true)
-        self.hyperparameter_name = 'initial value'
+        super().__init__(bandits, arms, time_steps, c_values, q_true)
+        self.hyperparameter_name = 'c'
 
     def learn(self) -> np.numarray:
         '''Perform reinforcement learning on the agent.
 
         Returns:
-            rewards (numpy array): The array of the expected rewards over the time steps for each initial action-value.
+            rewards (numpy array): The array of the expected rewards over the time steps for each c value.
         '''
-        return super()._learn(self._learn_initial_value)
+        return super()._learn(self._learn_c)
 
-    def _learn_initial_value(self, initial_value: float) -> np.numarray:
-        '''Perform optimistic initialization with a given initial action-value.
+    def _learn_c(self, c) -> np.numarray:
+        '''Perform UCB exploration with a given c value.
 
         Args:
-            epsilon (float): The initial action-value.
+            c (float): The c value.
 
         Returns:
             average_expected_reward (numpy array): The array of the expected rewards over the time steps.
         '''
-        # Initialize Q values optimistically
-        self.Q += initial_value
+        # Pull every arm once to prevent divide by zero in calculating UCB
+        self._pull_once()
 
         average_expected_reward = np.zeros(self.time_steps + 1)
         for t in range(1, self.time_steps + 1):
             expected_rewards = np.zeros(self.bandits)
             for bandit in range(self.bandits):
-                action = np.argmax(self.Q[bandit, :])
+                ucb_estimates = c * np.sqrt(np.log(t) / self.N[bandit, :])
+                action = np.argmax(self.Q[bandit, :] + ucb_estimates)
                 
                 # Use deterministic policy
                 expected_rewards[bandit] = self.q_true[bandit, action]
@@ -54,5 +55,13 @@ class OptimisticInitialization(Agent):
             average_expected_reward[t] = np.average(expected_rewards)
         return average_expected_reward
 
+    def _pull_once(self):
+        '''Pull every arm of each bandit once.
+        '''
+        for bandit in range(self.bandits):
+            for action in range(self.arms):
+                self.N[bandit, action] += 1
+                self.Q[bandit, action] += np.random.normal(self.q_true[bandit, action], 1)
+
     def __repr__(self):
-        return 'Optimistic Initialization'
+        return 'UCB Exploration'

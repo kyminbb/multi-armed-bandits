@@ -1,7 +1,7 @@
 from typing import List
 import numpy as np
 import matplotlib.pyplot as plt
-from agents import epsilon_greedy, optimistic_initialization
+from agents import epsilon_greedy, optimistic_initialization, ucb
 
 
 class Testbed:
@@ -42,7 +42,7 @@ class Testbed:
             self.agents[algorithm] = optimistic_initialization.OptimisticInitialization(
                 self.bandits, self.arms, self.time_steps, hyperparameters, self.q_true)
         elif algorithm == 'ucb':
-            pass
+            self.agents[algorithm] = ucb.UCB(self.bandits, self.arms, self.time_steps, hyperparameters, self.q_true)
         elif algorithm == 'boltzmann':
             pass
 
