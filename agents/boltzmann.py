@@ -4,7 +4,12 @@ from . import Agent
 
 
 class Boltzmann(Agent):
-    def __init__(self, bandits: int, arms: int, time_steps: int, temperatures: List[float], q_true: np.numarray):
+    def __init__(self,
+                 bandits: int,
+                 arms: int,
+                 time_steps: int,
+                 temperatures: List[float],
+                 q_true: np.numarray) -> None:
         '''Initialize a multi-armed bandit agent using UCB exploration.
 
         Args:

@@ -4,7 +4,12 @@ from . import Agent
 
 
 class OptimisticInitialization(Agent):
-    def __init__(self, bandits: int, arms: int, time_steps: int, initial_values: List[float], q_true: np.numarray):
+    def __init__(self,
+                 bandits: int,
+                 arms: int,
+                 time_steps: int,
+                 initial_values: List[float],
+                 q_true: np.numarray) -> None:
         '''Initialize a multi-armed bandit agent using optimistic initialization.
 
         Args:
@@ -43,7 +48,7 @@ class OptimisticInitialization(Agent):
             expected_rewards = np.zeros(self.bandits)
             for bandit in range(self.bandits):
                 action = np.argmax(self.Q[bandit, :])
-                
+
                 # Use deterministic policy
                 expected_rewards[bandit] = self.q_true[bandit, action]
 

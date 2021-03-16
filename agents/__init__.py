@@ -1,9 +1,14 @@
-from typing import List
+from typing import Any, Callable, List
 import numpy as np
 
 
 class Agent:
-    def __init__(self, bandits: int, arms: int, time_steps: int, hyperparameters: List[float], q_true: np.numarray):
+    def __init__(self,
+                 bandits: int,
+                 arms: int,
+                 time_steps: int,
+                 hyperparameters: List[float],
+                 q_true: np.numarray) -> None:
         '''Initialize a multi-armed bandit agent.
 
         Args:
@@ -20,13 +25,13 @@ class Agent:
         self.hyperparameters = hyperparameters
         self.q_true = q_true
 
-    def _reset(self):
+    def _reset(self) -> None:
         '''Reset the action-value table and the count table.
         '''
         self.Q = np.zeros((self.bandits, self.arms))
         self.N = np.zeros((self.bandits, self.arms))
 
-    def _learn(self, fn : function) -> np.numarray:
+    def _learn(self, fn: Callable[[Any, float], np.numarray]) -> np.numarray:
         '''Perform reinforcement learning on the agent.
 
         Args:
@@ -40,4 +45,3 @@ class Agent:
             self._reset()
             rewards[i, :] = fn(hyperparameter)
         return rewards
-    

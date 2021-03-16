@@ -4,7 +4,7 @@ from . import Agent
 
 
 class EpsilonGreedy(Agent):
-    def __init__(self, bandits: int, arms: int, time_steps: int, epsilons: List[float], q_true: np.numarray):
+    def __init__(self, bandits: int, arms: int, time_steps: int, epsilons: List[float], q_true: np.numarray) -> None:
         '''Initialize a multi-armed bandit agent using epsilon-greedy exploration.
 
         Args:

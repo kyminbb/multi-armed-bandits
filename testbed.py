@@ -5,12 +5,7 @@ from agents import epsilon_greedy, optimistic_initialization, ucb, boltzmann
 
 
 class Testbed:
-    def __init__(self,
-                 bandits: int = 20,
-                 arms: int = 10,
-                 time_steps: int = 1000,
-                 q_true_mu: float = 1.0,
-                 q_true_sigma: float = 1.0):
+    def __init__(self, bandits: int, arms: int, time_steps: int, q_true_mu: float, q_true_sigma: float) -> None:
         '''Initialize a testbed.
 
         Args: 
@@ -28,7 +23,7 @@ class Testbed:
         self.agents = dict()
         self.rewards = dict()
 
-    def register(self, algorithm: str, hyperparameters: List[float]):
+    def register(self, algorithm: str, hyperparameters: List[float]) -> None:
         '''Register an agent that uses a given exploration algorithm.
 
         Args:
@@ -47,7 +42,7 @@ class Testbed:
             self.agents[algorithm] = boltzmann.Boltzmann(
                 self.bandits, self.arms, self.time_steps, hyperparameters, self.q_true)
 
-    def test_all(self, plot: bool = False):
+    def test_all(self, plot: bool = False) -> None:
         '''Experiment with all the agents registered in the testbed.
 
         Args:
@@ -58,7 +53,7 @@ class Testbed:
         if plot:
             self._plot_best()
 
-    def test(self, algorithm: str, plot: bool = False):
+    def test(self, algorithm: str, plot: bool = False) -> None:
         '''Experiment with the agent that uses a given exploration algorithm.
 
         Args:
@@ -75,30 +70,30 @@ class Testbed:
         if plot:
             self._plot(algorithm)
 
-    def _plot(self, algorithm: str):
+    def _plot(self, algorithm: str) -> None:
         '''Plot the expected rewards of the agent that uses a given exploration algorithm over the time steps.
 
         Args:
             algorithm (str): The name of an exploration algorithm.  
         '''
-        colors = ['g', 'y', 'r', 'b', 'k']
+        colors = ['tab:green', 'tab:olive', 'tab:red', 'tab:blue', 'tab:purple']
         figure = plt.figure().add_subplot(111)
         agent = self.agents[algorithm]
         for i in range(len(agent.hyperparameters)):
             # Plot the rewards for each value of hyperparameter
             figure.plot(range(0, self.time_steps + 1), self.rewards[algorithm][i, :], colors[i])
 
-        figure.title.set_text(f'Average Reward of {agent} in 10-Armed Bandit')
+        figure.title.set_text(f'Average Reward of {agent} in {self.arms}-Armed Bandit')
         figure.set_xlabel('Time Steps')
         figure.set_ylabel('Average Reward')
         legend = tuple([f'{agent.hyperparameter_name}={hyperparameter}' for hyperparameter in agent.hyperparameters])
         figure.legend(legend, loc='best')
         plt.show()
 
-    def _plot_best(self):
+    def _plot_best(self) -> None:
         '''Plot the best-performing hyperparameter setting for each agent over the time steps.
         '''
-        colors = ['g', 'y', 'r', 'b', 'k']
+        colors = ['tab:green', 'tab:olive', 'tab:red', 'tab:blue', 'tab:purple']
         figure = plt.figure().add_subplot(111)
         legend = []
         i = 0

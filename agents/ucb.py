@@ -4,7 +4,7 @@ from . import Agent
 
 
 class UCB(Agent):
-    def __init__(self, bandits: int, arms: int, time_steps: int, c_values: List[float], q_true: np.numarray):
+    def __init__(self, bandits: int, arms: int, time_steps: int, c_values: List[float], q_true: np.numarray) -> None:
         '''Initialize a multi-armed bandit agent using UCB exploration.
 
         Args:
@@ -55,7 +55,7 @@ class UCB(Agent):
             average_expected_reward[t] = np.average(expected_rewards)
         return average_expected_reward
 
-    def _pull_once(self):
+    def _pull_once(self) -> None:
         '''Pull every arm of each bandit once.
         '''
         for bandit in range(self.bandits):
