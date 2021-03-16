@@ -1,6 +1,7 @@
 from typing import List
 import numpy as np
 import matplotlib.pyplot as plt
+from agents import epsilon_greedy
 
 
 class Testbed:
@@ -35,7 +36,8 @@ class Testbed:
             hyperparameters (list of (float)): Different hyperparameters to test the algorithm.
         '''
         if algorithm == 'epsilon-greedy':
-            pass
+            self.agents[algorithm] = epsilon_greedy.EpsilonGreedy(
+                self.bandits, self.arms, self.time_steps, hyperparameters, self.q_true)
         elif algorithm == 'optimistic-initialization':
             pass
         elif algorithm == 'ucb':
