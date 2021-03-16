@@ -47,17 +47,23 @@ class Testbed:
             self.agents[algorithm] = boltzmann.Boltzmann(
                 self.bandits, self.arms, self.time_steps, hyperparameters, self.q_true)
 
-    def test_all(self):
+    def test_all(self, plot: bool = False):
         '''Experiment with all the agents registered in the testbed.
+
+        Args:
+            plot (bool): The flag  to indicate whether to plot the results.
         '''
         for algorithm in self.agents:
-            self.test(algorithm)
+            self.test(algorithm, plot)
+        if plot:
+            self._plot_best()
 
-    def test(self, algorithm: str):
+    def test(self, algorithm: str, plot: bool = False):
         '''Experiment with the agent that uses a given exploration algorithm.
 
         Args:
             algorithm (str): The name of an exploration algorithm.
+            plot (bool): The flag to indicate whether to plot the results.
         '''
         try:
             agent = self.agents[algorithm]
@@ -66,3 +72,46 @@ class Testbed:
             return
         rewards = agent.learn()
         self.rewards[algorithm] = rewards
+        if plot:
+            self._plot(algorithm)
+
+    def _plot(self, algorithm: str):
+        '''Plot the expected rewards of the agent that uses a given exploration algorithm over the time steps.
+
+        Args:
+            algorithm (str): The name of an exploration algorithm.  
+        '''
+        colors = ['g', 'y', 'r', 'b', 'k']
+        figure = plt.figure().add_subplot(111)
+        agent = self.agents[algorithm]
+        for i in range(len(agent.hyperparameters)):
+            # Plot the rewards for each value of hyperparameter
+            figure.plot(range(0, self.time_steps + 1), self.rewards[algorithm][i, :], colors[i])
+
+        figure.title.set_text(f'Average Reward of {agent} in 10-Armed Bandit')
+        figure.set_xlabel('Time Steps')
+        figure.set_ylabel('Average Reward')
+        legend = tuple([f'{agent.hyperparameter_name}={hyperparameter}' for hyperparameter in agent.hyperparameters])
+        figure.legend(legend, loc='best')
+        plt.show()
+
+    def _plot_best(self):
+        '''Plot the best-performing hyperparameter setting for each agent over the time steps.
+        '''
+        colors = ['g', 'y', 'r', 'b', 'k']
+        figure = plt.figure().add_subplot(111)
+        legend = []
+        i = 0
+        for algorithm, rewards in self.rewards.items():
+            agent = self.agents[algorithm]
+            # Plot the rewards corresponding to the best hyperparameter
+            best_hyperparameter = np.argmax(rewards[:, self.time_steps - 1])
+            figure.plot(range(0, self.time_steps + 1), rewards[best_hyperparameter, :], colors[i])
+            legend.append(f'{agent} ({agent.hyperparameter_name}={agent.hyperparameters[best_hyperparameter]})')
+            i += 1
+
+        figure.title.set_text('Average Reward of Best Hyperparameter Settings')
+        figure.set_xlabel('Time Steps')
+        figure.set_ylabel('Average Reward')
+        figure.legend(tuple(legend), loc='best')
+        plt.show()
