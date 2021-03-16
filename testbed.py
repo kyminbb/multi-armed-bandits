@@ -9,8 +9,7 @@ class Testbed:
         '''Initialize a testbed.
 
         Args: 
-            bandits (int): The number of bandits (independent experiments) for each agent. Since each experiment is 
-                noisy, take the average to evaluate performance.
+            bandits (int): The number of bandits (independent experiments) for each agent.
             arms (int): The number of arms of each bandit.
             time_steps (int): The number of steps we run each bandit.
             q_true_mu (float): The mean of the true average rewards for each arm.
